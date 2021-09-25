@@ -39,7 +39,8 @@ function recompute_md5_checksum() {
 
 function generate_new_iso_and_cleanup() {
   echo "Generating new iso: $1..."
-  sudo genisoimage -r -J -b isolinux/isolinux.bin \
+  chmod +w isofiles/isolinux/isolinux.bin
+  genisoimage -r -J -b isolinux/isolinux.bin \
     -c isolinux/boot.cat \
     -no-emul-boot \
     -boot-load-size 4 \
@@ -47,7 +48,9 @@ function generate_new_iso_and_cleanup() {
     -o "$1" \
     isofiles
 
-  sudo rm -rf isofiles
+  isohybrid "$1"
+  chmod +w isofiles -R
+  rm -rf isofiles
 }
 
 extract_iso "$1"
