@@ -27,6 +27,17 @@ function make_auto_the_default_isolinux_boot_option() {
   chmod -w isofiles/isolinux/isolinux.cfg
 }
 
+function make_auto_the_default_grub_boot_option() {
+  echo "Setting 'auto' as default GRUB boot entry..."
+  chmod +w isofiles/boot/grub/grub.cfg
+  # The index for the grub menus is zero-based for the
+  # Root menu, but 1-based for the rest, so 2>5 is the
+  # second menu (advanced options) => fifth option (auto)
+  echo 'set default="2>5"' >>isofiles/boot/grub/grub.cfg
+  echo "set timeout=3" >>isofiles/boot/grub/grub.cfg
+  chmod -w isofiles/boot/grub/grub.cfg
+}
+
 function recompute_md5_checksum() {
   echo "Calculating new md5 checksum..."
   echo " -- You can safely ignore the warning about a 'file system loop' below"
@@ -65,6 +76,7 @@ function generate_new_iso_and_cleanup() {
 extract_iso "$1"
 add_preseed_to_initrd
 make_auto_the_default_isolinux_boot_option
+make_auto_the_default_grub_boot_option
 recompute_md5_checksum
 generate_new_iso_and_cleanup "./preseed-$(basename $1)" "$1"
 
