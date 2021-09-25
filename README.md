@@ -30,3 +30,4 @@ The configuration for the boot menu options is specific to bullseye in the case 
 ### More on how to preseed
 * https://wiki.debian.org/DebianInstaller/Preseed
 * https://wiki.debian.org/DebianInstaller/Preseed/EditIso
+* https://wiki.debian.org/RepackBootableISO
