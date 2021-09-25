@@ -17,7 +17,7 @@ function add_preseed_to_initrd() {
   chmod -w isofiles/install.amd/ -R
 }
 
-function make_auto_the_default_boot_option() {
+function make_auto_the_default_isolinux_boot_option() {
    echo "Setting 'auto' as default ISOLINUX boot entry..."
   TMP_FILE=$(mktemp --tmpdir tfile.XXXXX)
   sed 's/timeout 0/timeout 3/g' isofiles/isolinux/isolinux.cfg >$TMP_FILE
@@ -29,6 +29,7 @@ function make_auto_the_default_boot_option() {
 
 function recompute_md5_checksum() {
   echo "Calculating new md5 checksum..."
+  echo " -- You can safely ignore the warning about a 'file system loop' below"
   cd isofiles
   chmod +w md5sum.txt
   find . -follow -type f ! -name md5sum.txt -print0 | xargs -0 md5sum >md5sum.txt
@@ -51,7 +52,7 @@ function generate_new_iso_and_cleanup() {
 
 extract_iso "$1"
 add_preseed_to_initrd
-make_auto_the_default_boot_option
+make_auto_the_default_isolinux_boot_option
 recompute_md5_checksum
 generate_new_iso_and_cleanup "./preseed-$(basename $1)"
 
