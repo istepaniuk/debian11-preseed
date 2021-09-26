@@ -1,5 +1,5 @@
-# debian-preseed
-Script and configuration for fully automated debian install
+# Debian fully automatic install
+Script and configuration to remaster a debian netinst ISO for 100% unattended install
 
 Usage:
 1. Download a [debian "netinst"](https://www.debian.org/CD/netinst/) image (tested with bullseye)
