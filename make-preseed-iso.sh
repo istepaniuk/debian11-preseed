@@ -49,7 +49,7 @@ function recompute_md5_checksum() {
 }
 
 function generate_new_iso_and_cleanup() {
-  orig_iso=$2
+  orig_iso="$2"
   echo "Generating new iso: $1..."
   dd if="$orig_iso" bs=1 count=432 of=mbr_template.bin
 
