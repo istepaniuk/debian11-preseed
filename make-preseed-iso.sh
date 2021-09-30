@@ -9,22 +9,28 @@ function extract_iso() {
 }
 
 function add_preseed_to_initrd() {
+  local target_device=$1
+
   echo "Adding preseed.cfg to initrd..."
+  sed "s|%DISK%|$target_device|g" preseed.template >preseed.cfg
   chmod +w isofiles/install.amd/ -R
   gunzip isofiles/install.amd/initrd.gz
   echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
   gzip isofiles/install.amd/initrd
   chmod -w isofiles/install.amd/ -R
+  rm preseed.cfg
 }
 
 function make_auto_the_default_isolinux_boot_option() {
+  tmp_isolinux_cfg=$(mktemp --tmpdir isolinux.XXXXX)
+
   echo "Setting 'auto' as default ISOLINUX boot entry..."
-  TMP_FILE=$(mktemp --tmpdir tfile.XXXXX)
-  sed 's/timeout 0/timeout 3/g' isofiles/isolinux/isolinux.cfg >$TMP_FILE
-  echo "default auto" >>$TMP_FILE
+  sed 's/timeout 0/timeout 3/g' isofiles/isolinux/isolinux.cfg >$tmp_isolinux_cfg
+  echo "default auto" >>$tmp_isolinux_cfg
   chmod +w isofiles/isolinux/isolinux.cfg
-  cat $TMP_FILE >isofiles/isolinux/isolinux.cfg && rm $TMP_FILE
+  cat $tmp_isolinux_cfg >isofiles/isolinux/isolinux.cfg
   chmod -w isofiles/isolinux/isolinux.cfg
+  rm $tmp_isolinux_cfg
 }
 
 function make_auto_the_default_grub_boot_option() {
@@ -49,32 +55,36 @@ function recompute_md5_checksum() {
 }
 
 function generate_new_iso_and_cleanup() {
-  orig_iso="$2"
+  local orig_iso="$2"
+
   echo "Generating new iso: $1..."
   dd if="$orig_iso" bs=1 count=432 of=mbr_template.bin
 
   chmod +w isofiles/isolinux/isolinux.bin
   xorriso -as mkisofs -r \
-     -V 'Debian AUTO amd64' \
-     -o "$1" \
-     -J -joliet-long \
-     -cache-inodes \
-     -isohybrid-mbr mbr_template.bin \
-     -b isolinux/isolinux.bin \
-     -c isolinux/boot.cat \
-     -boot-load-size 4 -boot-info-table \
-     -no-emul-boot -eltorito-alt-boot \
-     -e boot/grub/efi.img -no-emul-boot \
-     -isohybrid-gpt-basdat \
-     -isohybrid-apm-hfsplus \
-     isofiles
+    -V 'Debian AUTO amd64' \
+    -o "$1" \
+    -J -joliet-long \
+    -cache-inodes \
+    -isohybrid-mbr mbr_template.bin \
+    -b isolinux/isolinux.bin \
+    -c isolinux/boot.cat \
+    -boot-load-size 4 -boot-info-table \
+    -no-emul-boot -eltorito-alt-boot \
+    -e boot/grub/efi.img -no-emul-boot \
+    -isohybrid-gpt-basdat \
+    -isohybrid-apm-hfsplus \
+    isofiles
 
   chmod +w isofiles -R
   rm -rf isofiles mbr_template.bin
 }
 
-extract_iso "$1"
-add_preseed_to_initrd
+orig_iso=$1
+target_device=$2
+
+extract_iso "$orig_iso"
+add_preseed_to_initrd "$target_device"
 make_auto_the_default_isolinux_boot_option
 make_auto_the_default_grub_boot_option
 recompute_md5_checksum
