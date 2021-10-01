@@ -9,16 +9,12 @@ function extract_iso() {
 }
 
 function add_preseed_to_initrd() {
-  local target_device=$1
-
   echo "Adding preseed.cfg to initrd..."
-  sed "s|%DISK%|$target_device|g" preseed.template >preseed.cfg
   chmod +w isofiles/install.amd/ -R
   gunzip isofiles/install.amd/initrd.gz
   echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
   gzip isofiles/install.amd/initrd
   chmod -w isofiles/install.amd/ -R
-  rm preseed.cfg
 }
 
 function make_auto_the_default_isolinux_boot_option() {
@@ -55,15 +51,16 @@ function recompute_md5_checksum() {
 }
 
 function generate_new_iso_and_cleanup() {
-  local orig_iso="$2"
+  local orig_iso="$1"
+  local new_iso="$2"
 
-  echo "Generating new iso: $1..."
+  echo "Generating new iso: $new_iso..."
   dd if="$orig_iso" bs=1 count=432 of=mbr_template.bin
 
   chmod +w isofiles/isolinux/isolinux.bin
   xorriso -as mkisofs -r \
     -V 'Debian AUTO amd64' \
-    -o "$1" \
+    -o "$new_iso" \
     -J -joliet-long \
     -cache-inodes \
     -isohybrid-mbr mbr_template.bin \
@@ -80,14 +77,14 @@ function generate_new_iso_and_cleanup() {
   rm -rf isofiles mbr_template.bin
 }
 
-orig_iso=$1
-target_device=$2
+orig_iso="$1"
+new_iso="./preseed-$(basename $orig_iso)"
 
 extract_iso "$orig_iso"
-add_preseed_to_initrd "$target_device"
+add_preseed_to_initrd
 make_auto_the_default_isolinux_boot_option
 make_auto_the_default_grub_boot_option
 recompute_md5_checksum
-generate_new_iso_and_cleanup "./preseed-$(basename $1)" "$1"
+generate_new_iso_and_cleanup "$orig_iso" "$new_iso"
 
-echo DONE.
+echo "DONE."

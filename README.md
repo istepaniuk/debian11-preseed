@@ -9,15 +9,13 @@ Usage:
 ./make-preseed-iso.sh debian-11.0.0-amd64-netinst.iso
 ```
 This will create a new ISO image named `preseed-debian-11.0.0-amd64-netinst.iso` that
-installs debian on /dev/sda without intervention, not even a boot menu prompt.
+installs debian on the first available disk without intervention, not even a boot menu prompt.
 
 ### WARNING: This deletes stuff!
 
-The preseed.cfg that in this repository ***erases /dev/sda completely***
+The preseed.cfg that in this repository ***completely erases the first disc\*\* completely***
 
-    Note that you can't reliably know what disk /dev/sda really is; in some sistems
-    it might be the USB device that holds the installer if you are installing from USB
-
+> ** as returned by `list-devices disk`, excluding usb
 
 Also... open the script and read what it does. I made this for myself because I'm tired of hitting
 enter 40 times everytime I need to install debian.
