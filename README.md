@@ -13,7 +13,7 @@ installs debian on the first available disk without intervention, not even a boo
 
 ### WARNING: This deletes stuff!
 
-The preseed.cfg that in this repository ***completely erases the first disc\*\* completely***
+The preseed.cfg that in this repository ***completely erases the first disc\*\****
 
 > ** as returned by `list-devices disk`, excluding usb
 
