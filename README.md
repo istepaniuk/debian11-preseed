@@ -1,4 +1,4 @@
-# Debian fully automatic install
+# Debian fully automatic install through ISO remastering
 Script and configuration to remaster a debian netinst ISO for 100% unattended install
 
 Usage:
