@@ -1,4 +1,11 @@
-# Debian fully automatic install through ISO remastering
+## UPDATE: 
+
+There is a Debian 13 (trixie) version of this repository here:
+
+### https://github.com/istepaniuk/debian13-preseed
+
+---
+### Fully automatic installation of Debian 11 through ISO remastering
 Script and configuration to remaster a debian netinst ISO for 100% unattended install
 
 Usage:
